@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mahdi Ghadamgahi — ML Engineer</title>
-  <meta name="description" content="Machine Learning Engineer with 6+ years experience in computer vision, anomaly detection, and GenAI/LLM systems. MSc from Politecnico di Milano." />
-  <meta property="og:title" content="Mahdi Ghadamgahi — ML Engineer" />
-  <meta property="og:description" content="Machine Learning Engineer with 6+ years experience in computer vision, anomaly detection, and GenAI/LLM systems." />
+  <title>Mahdi Ghadamgahi — ML &amp; Generative AI Engineer</title>
+  <meta name="description" content="Machine Learning Engineer with 6+ years experience in computer vision, anomaly detection, and generative AI. Building creative production pipelines with generative video and image models. MSc from Politecnico di Milano." />
+  <meta property="og:title" content="Mahdi Ghadamgahi — ML &amp; Generative AI Engineer" />
+  <meta property="og:description" content="Machine Learning Engineer — computer vision, anomaly detection, and generative AI creative production pipelines." />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Mahdi Ghadamgahi — ML Engineer" />
-  <meta name="twitter:description" content="Machine Learning Engineer — computer vision, anomaly detection, GenAI/LLM." />
+  <meta name="twitter:title" content="Mahdi Ghadamgahi — ML &amp; Generative AI Engineer" />
+  <meta name="twitter:description" content="Machine Learning Engineer — computer vision, anomaly detection, generative AI production pipelines." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' font-size='60' x='50%' dominant-baseline='auto' text-anchor='middle' font-family='system-ui' fill='white'>MG</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -339,6 +339,63 @@
     }
     .tag.teal { background: var(--teal-lt); color: var(--teal); }
 
+    /* ── PROJECTS ── */
+    #projects { background: var(--surface); }
+    .proj-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px;
+      box-shadow: var(--shadow);
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .proj-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 28px rgba(99,102,241,.16);
+      border-color: var(--accent);
+    }
+    .proj-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .proj-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -.3px; }
+    .proj-company { font-size: .875rem; color: var(--accent); font-weight: 600; margin-top: 2px; }
+    .proj-desc {
+      font-size: .9rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-top: 10px;
+      max-width: 68ch;
+    }
+    .proj-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+      margin: 22px 0 4px;
+    }
+    .proj-stat { display: flex; flex-direction: column; }
+    .ps-num {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -.4px;
+      line-height: 1.2;
+    }
+    .ps-lbl { font-size: .76rem; color: var(--muted); font-weight: 500; max-width: 22ch; }
+    .proj-cta {
+      margin-top: 20px;
+      font-size: .875rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
     /* ── SKILLS ── */
     #skills { background: var(--surface); }
     .skills-grid {
@@ -501,6 +558,7 @@
     </button>
     <ul class="nav-links" id="nav-links">
       <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
       <li><a href="#experience">Experience</a></li>
       <li><a href="#skills">Skills</a></li>
       <li><a href="#education">Education</a></li>
@@ -513,16 +571,17 @@
 <!-- HERO -->
 <section id="hero">
   <div class="container">
-    <div class="hero-eyebrow">🤖 Machine Learning Engineer</div>
+    <div class="hero-eyebrow">🤖 ML &amp; Generative AI Engineer</div>
     <h1>Designing <span>AI systems</span> that work in the real world.</h1>
     <p class="hero-sub">
       MSc in Computer Science from Politecnico di Milano. 6+ years building production-grade ML pipelines —
-      from computer vision and anomaly detection to GenAI and LLM solutions for industrial and enterprise applications.
+      from computer vision and anomaly detection to generative AI systems for creative production.
+      I build pipelines rather than operate tools.
     </p>
     <div class="hero-cta">
       <a href="#contact" class="btn btn-primary">Get in Touch</a>
       <a href="cv.pdf" download class="btn btn-outline">⬇ Download CV</a>
-      <a href="#experience" class="btn btn-outline">View Experience</a>
+      <a href="#projects" class="btn btn-outline">View Projects</a>
     </div>
     <div class="hero-stats">
       <div class="stat">
@@ -558,6 +617,11 @@
           and GenAI/LLM applications for industrial settings.
         </p>
         <p>
+          Most recently I've been applying that same systems thinking to generative AI — building a complete
+          creative production pipeline around current generative video, image and audio models, and running it
+          as a live public property rather than a demo.
+        </p>
+        <p>
           I bridge the gap between cutting-edge research and real-world engineering, communicating complex
           model behaviour clearly to both technical teams and business stakeholders.
         </p>
@@ -574,12 +638,53 @@
           <p>Real-time defect detection and quality control systems deployed in manufacturing environments.</p>
         </div>
         <div class="highlight-card">
-          <div class="hl-icon">🧠</div>
-          <h4>GenAI &amp; LLMs</h4>
-          <p>Building RAG pipelines, LLM-powered applications, and agentic systems with LangChain and HuggingFace.</p>
+          <div class="hl-icon">🎬</div>
+          <h4>Generative AI Production</h4>
+          <p>Character-consistent video and image pipelines, reusable prompt systems, and creative measured against live audience data.</p>
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <h2 class="section-title">Projects</h2>
+    <a class="proj-card" href="laverna.html">
+      <div class="proj-head">
+        <div>
+          <div class="proj-title">Generative AI Video Production Pipeline</div>
+          <div class="proj-company">LAVERNA — AI-generated music group</div>
+        </div>
+        <div class="exp-meta">
+          <span class="exp-date">📅 2026 – present</span>
+          <span class="exp-loc">🎬 Independent</span>
+        </div>
+      </div>
+      <p class="proj-desc">
+        A serialised AI-generated media property built and run solo — four consistent virtual characters,
+        three music videos, a narrative short film and a daily publishing cadence. Built as a working answer to a
+        harder question than one-off image generation: what does it take to run generative AI as a production
+        pipeline rather than a toy?
+      </p>
+      <div class="proj-stats">
+        <div class="proj-stat"><span class="ps-num">4</span><span class="ps-lbl">consistent characters</span></div>
+        <div class="proj-stat"><span class="ps-num">3</span><span class="ps-lbl">music videos + short film</span></div>
+        <div class="proj-stat"><span class="ps-num">Daily</span><span class="ps-lbl">short-form publishing cadence</span></div>
+      </div>
+      <div class="exp-tags">
+        <span class="tag">Character Consistency</span>
+        <span class="tag">Prompt System Design</span>
+        <span class="tag">Generative Video</span>
+        <span class="tag">Creative Measurement</span>
+        <span class="tag teal">Seedance</span>
+        <span class="tag teal">Seedream</span>
+        <span class="tag teal">Premiere Pro</span>
+      </div>
+      <div class="proj-cta">Read the case study →</div>
+    </a>
   </div>
 </section>
 
@@ -701,6 +806,19 @@
   <div class="container">
     <h2 class="section-title">Skills</h2>
     <div class="skills-grid">
+
+      <div class="skill-group">
+        <div class="skill-group-title">🎬 Generative AI</div>
+        <div class="skill-badges">
+          <span class="badge">Seedance</span>
+          <span class="badge">Seedream</span>
+          <span class="badge">Higgsfield</span>
+          <span class="badge">Stable Diffusion</span>
+          <span class="badge">Prompt System Design</span>
+          <span class="badge">Character Consistency</span>
+          <span class="badge">Premiere Pro</span>
+        </div>
+      </div>
 
       <div class="skill-group">
         <div class="skill-group-title">🐍 Languages &amp; Core Libs</div>
@@ -841,7 +959,8 @@
   <div class="container">
     <h2 class="section-title">Get in Touch</h2>
     <p class="contact-sub">
-      Open to new opportunities in machine learning, computer vision, and GenAI engineering.
+      Open to new opportunities in machine learning, computer vision, and generative AI —
+      particularly roles building creative automation and production systems.
       Feel free to reach out via email or LinkedIn.
     </p>
     <div class="contact-links">
@@ -856,7 +975,7 @@
 </section>
 
 <footer>
-  <p>Mahdi Ghadamgahi &nbsp;·&nbsp; Milan, Italy &nbsp;·&nbsp; Machine Learning Engineer</p>
+  <p>Mahdi Ghadamgahi &nbsp;·&nbsp; Italy &nbsp;·&nbsp; ML &amp; Generative AI Engineer</p>
 </footer>
 
 <script>

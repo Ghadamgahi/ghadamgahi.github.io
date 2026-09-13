@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generative AI Video Production Pipeline — Mahdi Ghadamgahi</title>
+  <meta name="description" content="Case study: building a serialised AI-generated media property solo — character consistency across hundreds of generations, a reusable prompt architecture, and creative measured against live audience data." />
+  <meta property="og:title" content="Generative AI Video Production Pipeline — Case Study" />
+  <meta property="og:description" content="Character consistency, prompt system design, documented model failure modes, and creative measured against live audience data." />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' font-size='60' x='50%' dominant-baseline='auto' text-anchor='middle' font-family='system-ui' fill='white'>MG</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f8fafc;
+      --surface:   #ffffff;
+      --border:    #e2e8f0;
+      --text:      #0f172a;
+      --muted:     #64748b;
+      --accent:    #6366f1;
+      --accent-lt: #eef2ff;
+      --teal:      #0ea5e9;
+      --teal-lt:   #e0f2fe;
+      --radius:    12px;
+      --shadow:    0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 900px; margin: 0 auto; padding: 0 24px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-weight: 700; font-size: 1rem; color: var(--text);
+      text-decoration: none; letter-spacing: -.3px;
+    }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted);
+      font-size: .875rem; font-weight: 500; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    @media (max-width: 640px) { .nav-links { gap: 16px; } .nav-links li:nth-child(n+3) { display: none; } }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 64px 0; }
+
+    h2.section-title {
+      font-size: 1.5rem; font-weight: 700; margin-bottom: 32px;
+      display: flex; align-items: center; gap: 10px; letter-spacing: -.4px;
+    }
+    h2.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── HERO ── */
+    #hero {
+      padding: 72px 0 64px;
+      background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    }
+    .breadcrumb { font-size: .8rem; margin-bottom: 22px; }
+    .breadcrumb a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    .breadcrumb a:hover { color: var(--accent); }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent-lt); color: var(--accent);
+      font-size: .8rem; font-weight: 600; padding: 4px 12px;
+      border-radius: 99px; margin-bottom: 18px; letter-spacing: .3px;
+    }
+    #hero h1 {
+      font-size: clamp(1.9rem, 4.6vw, 2.7rem); font-weight: 700;
+      letter-spacing: -.8px; line-height: 1.15; margin-bottom: 16px; max-width: 660px;
+    }
+    #hero h1 span { color: var(--accent); }
+    .hero-sub {
+      color: var(--muted); font-size: 1.05rem; max-width: 640px;
+      margin-bottom: 30px; line-height: 1.7;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 22px; border-radius: 8px; font-size: .875rem;
+      font-weight: 600; text-decoration: none; transition: all .2s; border: none;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #4f46e5; transform: translateY(-1px); }
+    .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .hero-stats { display: flex; gap: 36px; margin-top: 48px; flex-wrap: wrap; }
+    .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--accent); letter-spacing: -.5px; }
+    .stat-label { font-size: .78rem; color: var(--muted); font-weight: 500; max-width: 20ch; }
+
+    /* ── CONTENT ── */
+    .alt { background: var(--surface); }
+    .prose p { color: var(--muted); margin-bottom: 15px; line-height: 1.75; max-width: 70ch; }
+    .prose p strong { color: var(--text); font-weight: 600; }
+    .prose p.lead { color: var(--text); font-size: 1.02rem; }
+    .prose ul { margin: 0 0 15px 0; padding-left: 20px; max-width: 70ch; }
+    .prose li { color: var(--muted); margin-bottom: 8px; line-height: 1.7; }
+    .prose li strong { color: var(--text); font-weight: 600; }
+    h3.sub {
+      font-size: 1rem; font-weight: 700; margin: 28px 0 10px; letter-spacing: -.2px;
+    }
+
+    .callout {
+      background: var(--accent-lt);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 18px 22px; margin: 22px 0; max-width: 70ch;
+    }
+    .callout p { color: #3730a3; margin: 0; font-size: .92rem; line-height: 1.7; }
+    .callout p strong { color: #312e81; }
+
+    .tablewrap {
+      overflow-x: auto; margin: 22px 0 6px;
+      border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
+    }
+    table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: .84rem; }
+    th, td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    th {
+      color: var(--muted); font-weight: 700; font-size: .7rem;
+      letter-spacing: .8px; text-transform: uppercase; background: var(--bg);
+    }
+    td { color: var(--muted); line-height: 1.6; }
+    td:first-child { color: var(--text); font-weight: 600; white-space: nowrap; }
+
+    .skill-badges { display: flex; flex-wrap: wrap; gap: 7px; }
+    .badge {
+      font-size: .78rem; font-weight: 500; padding: 4px 11px; border-radius: 6px;
+      background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    }
+    .tag {
+      font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 99px;
+      background: var(--accent-lt); color: var(--accent); letter-spacing: .2px;
+    }
+
+    /* ── CLOSING ── */
+    #closing { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: #fff; }
+    #closing h2.section-title { color: #fff; }
+    #closing h2.section-title::after { background: rgba(255,255,255,.15); }
+    #closing p { color: rgba(255,255,255,.72); max-width: 70ch; margin-bottom: 15px; line-height: 1.75; }
+    #closing p strong { color: #fff; font-weight: 600; }
+    .contact-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 20px; border-radius: 10px; text-decoration: none;
+      font-size: .875rem; font-weight: 600; transition: all .2s;
+      background: var(--accent); color: #fff; margin-top: 14px;
+    }
+    .contact-link:hover { transform: translateY(-2px); opacity: .92; }
+
+    footer {
+      background: #0f172a; border-top: 1px solid rgba(255,255,255,.08);
+      padding: 24px; text-align: center; color: rgba(255,255,255,.4); font-size: .8rem;
+    }
+    footer a { color: rgba(255,255,255,.6); text-decoration: none; }
+    footer a:hover { color: #fff; }
+
+    @media (max-width: 680px) { section { padding: 48px 0; } .hero-stats { gap: 22px; } }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Mahdi G.</a>
+    <ul class="nav-links">
+      <li><a href="index.html#projects">Projects</a></li>
+      <li><a href="index.html#experience">Experience</a></li>
+      <li><a href="index.html#skills">Skills</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">← Back to portfolio</a></div>
+    <div class="hero-eyebrow">🎬 Case Study · Independent Project</div>
+    <h1>Generative AI <span>Video Production Pipeline</span></h1>
+    <p class="hero-sub">
+      Building a serialised AI-generated media property solo — character consistency across hundreds of
+      generations, a reusable prompt architecture, and creative iterated against live audience data.
+    </p>
+    <div class="hero-cta">
+      <a href="https://www.youtube.com/@lavernaofficial" target="_blank" rel="noopener" class="btn btn-primary">▶ View the channel</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Consistent virtual characters</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Music videos + narrative short film</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">Daily</div>
+        <div class="stat-label">Short-form publishing cadence</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">+67%</div>
+        <div class="stat-label">Watch time per viewer on narrative vs. music-video content</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OVERVIEW -->
+<section class="alt">
+  <div class="container prose">
+    <h2 class="section-title">Overview</h2>
+    <p class="lead">
+      LAVERNA is a fictional four-member music group whose entire output — music, video, artwork and identity —
+      is generated, edited and published by one person. It exists as a working testbed for a question more
+      interesting than one-off image generation: <strong>what does it take to run generative AI as a production
+      pipeline rather than a toy?</strong>
+    </p>
+    <p>
+      Single images are easy. Serialised content is not. The moment the same four faces need to appear across
+      multiple videos, wardrobes, locations and lighting setups — and still be recognisable at thumbnail size on
+      a phone — the problem stops being prompting and becomes systems design.
+    </p>
+    <p>
+      What follows are the four problems that actually took engineering, and how each was solved.
+    </p>
+  </div>
+</section>
+
+<!-- 01 -->
+<section>
+  <div class="container prose">
+    <h2 class="section-title">01 · Character consistency</h2>
+    <p>
+      The central technical constraint. A group only works if viewers recognise its members, which means the same
+      face has to survive hundreds of generations across different outfits, lighting, camera angles and settings.
+    </p>
+    <p>
+      Reference conditioning solves this, but only when the reference itself is built correctly. The first
+      character sheets used wide shots with low facial detail — and every generation drawing on them produced
+      near-miss faces that broke recognition immediately.
+    </p>
+    <div class="callout">
+      <p>
+        A face reference should be <strong>flat-lit, frontal and neutral</strong> — the opposite of the dramatic,
+        high-contrast portraits it will later be used to produce. Shadow hides features, and hidden features
+        get invented.
+      </p>
+    </div>
+    <p>
+      Rebuilding references as clean, evenly lit, frontal portraits with sharp eye detail fixed identity drift
+      across the entire pipeline, for both image and video generation.
+    </p>
+  </div>
+</section>
+
+<!-- 02 -->
+<section class="alt">
+  <div class="container prose">
+    <h2 class="section-title">02 · Prompt architecture</h2>
+    <p>
+      Writing a bespoke prompt per shot doesn't scale. Every prompt in the pipeline is a
+      <strong>parameterised template</strong>: a fixed structural body with swappable variables for character
+      token, wardrobe, lighting temperature, expression, camera position and aspect ratio.
+    </p>
+    <p>That yields three things that matter in production:</p>
+    <ul>
+      <li><strong>Reproducibility</strong> — a look can be recreated months later rather than rediscovered by trial and error.</li>
+      <li><strong>Controlled iteration</strong> — one variable changes at a time, so any failure is attributable.</li>
+      <li><strong>Throughput</strong> — a single template covers four characters and every era, instead of sixteen bespoke prompts.</li>
+    </ul>
+    <p>
+      Prompts are also ordered by how models actually weight instruction. Subject and framing lead; background and
+      lighting are stated explicitly rather than implied — an unstated background reliably defaults to a studio
+      backdrop, which is rarely what a scene needs.
+    </p>
+  </div>
+</section>
+
+<!-- 03 -->
+<section>
+  <div class="container prose">
+    <h2 class="section-title">03 · Documented failure modes</h2>
+    <p>
+      Most of the value in a mature prompt system sits in its negatives. These are recurring failures hit in
+      production and the constraints that resolved them — each found by diagnosis rather than by rerolling until
+      something worked.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Failure</th><th>Cause</th><th>Constraint that fixes it</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Head yaw</td>
+            <td>Fashion photography is overwhelmingly three-quarter, so models default to it</td>
+            <td>“Both ears equally visible; the nose does not overlap either cheek outline”</td>
+          </tr>
+          <tr>
+            <td>Uplighting</td>
+            <td>“Spotlight” plus a black background reads as stage lighting from the floor</td>
+            <td>Name the shadows, not the light — under nose, under lip, under jaw; catchlights in the upper iris</td>
+          </tr>
+          <tr>
+            <td>Conflicting pose</td>
+            <td>“Head tilted down, eyes lifted” is two competing instructions resolved inconsistently</td>
+            <td>Separate pitch from yaw; constrain only the axis that is actually failing</td>
+          </tr>
+          <tr>
+            <td>Identity collapse</td>
+            <td>Identical poses and wardrobe in group shots invite the model to reuse one face</td>
+            <td>Give each subject distinct posture and clothing — variation forces differentiation</td>
+          </tr>
+          <tr>
+            <td>Text rendering</td>
+            <td>Wildstyle lettering is deliberately illegible throughout training data</td>
+            <td>Spell the word letter by letter, constrain distortion, batch generate and curate</td>
+          </tr>
+          <tr>
+            <td>Anatomical omission</td>
+            <td>Exposed midriffs smoothed to blank skin</td>
+            <td>Fold the anatomy into the garment description rather than appending it as a separate clause</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 04 -->
+<section class="alt">
+  <div class="container prose">
+    <h2 class="section-title">04 · Creative measured, not guessed</h2>
+    <p>
+      Generative output is cheap, which makes taste the bottleneck — and taste is testable. Every creative
+      decision in the pipeline is evaluated against live audience data rather than personal preference.
+    </p>
+
+    <h3 class="sub">Thumbnails judged at delivery size</h3>
+    <p>
+      Thumbnails were failing not because they were poorly made, but because they were
+      <strong>indistinguishable from their neighbours</strong> — the same bright, busy, multi-subject composition
+      as every competing tile in the feed. Diagnosing that required rendering candidates at 168px, the size they
+      actually appear at, and compositing them into real sidebar screenshots rather than judging them full-screen.
+    </p>
+    <p>
+      The rebuild inverted the variables that mattered: one large face instead of four small ones, near-black
+      instead of bright, empty instead of busy. Contrast against neighbours — not intrinsic quality — is what
+      wins the click.
+    </p>
+
+    <h3 class="sub">Metadata as an audience-steering lever</h3>
+    <p>
+      Traffic-source analysis showed suggested placement dominated by a single major artist whose audience watched
+      roughly a quarter of each video — high volume, poor fit. Adjusting title metadata moved placement into a
+      broader, better-matched segment where equivalent traffic watched substantially more of the same content.
+    </p>
+    <p>
+      The lesson generalises: <strong><em>where</em> creative is served often matters more than the creative
+      itself</strong> — and metadata, not artwork, is the lever that moves it.
+    </p>
+
+    <h3 class="sub">Format decisions from measured behaviour</h3>
+    <p>
+      Comparing formats on the same channel, narrative content sustained an average view duration of
+      <strong>1:25 against 0:51</strong> for music-video content — roughly <strong>67% more watch time per
+      viewer</strong> — on fewer total views, with a 95–100% positive like ratio across releases.
+    </p>
+    <p>
+      That reframed the production roadmap: the format that looked secondary was in fact carrying more attention
+      per viewer than the flagship one. Deciding what to build next became a data question rather than a taste
+      question.
+    </p>
+
+    <h3 class="sub">Retention read as diagnosis</h3>
+    <p>
+      Retention curves distinguish between problems that look identical in aggregate. A cliff in the first seconds
+      is a promise mismatch between thumbnail and content; a steady slide is a pacing problem; a flat middle means
+      the content holds and the entry point is at fault. Each implies a different fix.
+    </p>
+  </div>
+</section>
+
+<!-- IDENTITY -->
+<section>
+  <div class="container prose">
+    <h2 class="section-title">Visual identity as a system</h2>
+    <p>
+      Consistency across a property is a design system problem, not an art problem. LAVERNA runs on a defined and
+      documented set of rules:
+    </p>
+    <ul>
+      <li><strong>Typography</strong> — a single display face with fixed logo-block proportions (20% of frame width, 7.5% of height) that scale cleanly across every format.</li>
+      <li><strong>Colour</strong> — each member owns a colour, locked to the person rather than her current hair, so creative eras can change without the system breaking.</li>
+      <li><strong>Composition grammar</strong> — a shared thumbnail language (low camera, lifted chin, neutral expression) that makes unrelated videos read as one channel.</li>
+      <li><strong>Format discipline</strong> — every asset designed for both 16:9 and 9:16 delivery and validated at mobile scale first, since the majority of views are phone views.</li>
+    </ul>
+
+    <h3 class="sub">Stack</h3>
+    <div class="skill-badges">
+      <span class="badge">Seedance</span>
+      <span class="badge">Seedream</span>
+      <span class="badge">Higgsfield</span>
+      <span class="badge">Stable Diffusion</span>
+      <span class="badge">Suno</span>
+      <span class="badge">Adobe Premiere Pro</span>
+      <span class="badge">Python</span>
+      <span class="badge">Reference conditioning</span>
+      <span class="badge">Prompt templating</span>
+      <span class="badge">Batch generation</span>
+      <span class="badge">A/B testing</span>
+      <span class="badge">Retention analysis</span>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section id="closing">
+  <div class="container">
+    <h2 class="section-title">What transfers</h2>
+    <p>
+      The project is a music group, but the work underneath it is the work these systems need in any commercial
+      setting: <strong>maintaining brand and character consistency at volume</strong>,
+      <strong>building prompt systems other people could run</strong>,
+      <strong>diagnosing model failure instead of rerolling past it</strong>, and
+      <strong>closing the loop between generated creative and measured performance</strong>.
+    </p>
+    <p>
+      The medium was chosen because it is unforgiving. Serialised characters break loudly when consistency fails,
+      and a public channel gives honest feedback every single day.
+    </p>
+    <a href="https://www.youtube.com/@lavernaofficial" target="_blank" rel="noopener" class="contact-link">▶ View the channel</a>
+  </div>
+</section>
+
+<footer>
+  <p>
+    Mahdi Ghadamgahi &nbsp;·&nbsp;
+    <a href="index.html">Portfolio</a> &nbsp;·&nbsp;
+    <a href="https://linkedin.com/in/ghadamgahi" target="_blank" rel="noopener">LinkedIn</a> &nbsp;·&nbsp;
+    <a href="mailto:ghadamgahi.smm@gmail.com">ghadamgahi.smm@gmail.com</a>
+  </p>
+</footer>
+
+</body>
+</html>
