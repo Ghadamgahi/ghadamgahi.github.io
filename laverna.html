@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Generative AI Video Production Pipeline — Mahdi Ghadamgahi</title>
-  <meta name="description" content="Case study: building a serialised AI-generated media property solo — character consistency across hundreds of generations, a reusable prompt architecture, and creative measured against live audience data." />
+  <meta name="description" content="Case study: building a serialised AI-generated media property solo — character consistency across thousands of generations, a reusable prompt architecture, platform-level workarounds, and creative measured against live audience data." />
   <meta property="og:title" content="Generative AI Video Production Pipeline — Case Study" />
-  <meta property="og:description" content="Character consistency, prompt system design, documented model failure modes, and creative measured against live audience data." />
+  <meta property="og:description" content="Character consistency at thousands-of-generations scale, prompt system design, documented model failure modes, platform-level workarounds, and creative measured against live audience data." />
   <meta property="og:type" content="article" />
   <meta name="twitter:card" content="summary" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' font-size='60' x='50%' dominant-baseline='auto' text-anchor='middle' font-family='system-ui' fill='white'>MG</text></svg>" />
@@ -197,24 +197,25 @@
     <div class="hero-eyebrow">🎬 Case Study · Independent Project</div>
     <h1>Generative AI <span>Video Production Pipeline</span></h1>
     <p class="hero-sub">
-      Building a serialised AI-generated media property solo — character consistency across hundreds of
-      generations, a reusable prompt architecture, and creative iterated against live audience data.
+      Building a serialised AI-generated media property solo — character consistency across thousands of
+      generations, a reusable prompt architecture, platform-level workarounds, and creative measured against
+      live audience data.
     </p>
     <div class="hero-cta">
       <a href="https://www.youtube.com/@lavernaofficial" target="_blank" rel="noopener" class="btn btn-primary">▶ View the channel</a>
     </div>
     <div class="hero-stats">
       <div class="stat">
+        <div class="stat-num">5,892</div>
+        <div class="stat-label">Generations in a single billing cycle</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">792</div>
+        <div class="stat-label">Video clips, 7,061 seconds of rendered footage</div>
+      </div>
+      <div class="stat">
         <div class="stat-num">4</div>
-        <div class="stat-label">Consistent virtual characters</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">3</div>
-        <div class="stat-label">Music videos + narrative short film</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">Daily</div>
-        <div class="stat-label">Short-form publishing cadence</div>
+        <div class="stat-label">Consistent characters across three wardrobe eras</div>
       </div>
       <div class="stat">
         <div class="stat-num">+67%</div>
@@ -237,10 +238,17 @@
     <p>
       Single images are easy. Serialised content is not. The moment the same four faces need to appear across
       multiple videos, wardrobes, locations and lighting setups — and still be recognisable at thumbnail size on
-      a phone — the problem stops being prompting and becomes systems design.
+      a phone — <strong>the problem stops being prompting and becomes design system work</strong>.
     </p>
     <p>
-      What follows are the four problems that actually took engineering, and how each was solved.
+      Real numbers give the volume: one recent billing cycle covered <strong>5,892 generations — 5,080 images,
+      792 video clips, 7,061 seconds of rendered footage</strong>. A single three-minute music video in this
+      pipeline is roughly twenty overlapping ten-second segments, cross-cutting two locations with nineteen
+      dancers in exact unison across every cut, lip-synced to the audio at frame accuracy. Every generation
+      runs against the same rig; nothing is rebuilt bespoke.
+    </p>
+    <p>
+      What follows are the five problems that actually took engineering, and how each was solved.
     </p>
   </div>
 </section>
@@ -251,7 +259,8 @@
     <h2 class="section-title">01 · Character consistency</h2>
     <p>
       The central technical constraint. A group only works if viewers recognise its members, which means the same
-      face has to survive hundreds of generations across different outfits, lighting, camera angles and settings.
+      face has to survive thousands of generations across three distinct wardrobe eras per member — street, formal,
+      and finale — plus multiple hair and styling variants within each.
     </p>
     <p>
       Reference conditioning solves this, but only when the reference itself is built correctly. The first
@@ -267,7 +276,8 @@
     </div>
     <p>
       Rebuilding references as clean, evenly lit, frontal portraits with sharp eye detail fixed identity drift
-      across the entire pipeline, for both image and video generation.
+      across the entire pipeline, for both image and video generation. The same rig now carries each character
+      through every era without a new reference build.
     </p>
   </div>
 </section>
@@ -313,16 +323,16 @@
           <tr>
             <td>Head yaw</td>
             <td>Fashion photography is overwhelmingly three-quarter, so models default to it</td>
-            <td>“Both ears equally visible; the nose does not overlap either cheek outline”</td>
+            <td>"Both ears equally visible; the nose does not overlap either cheek outline"</td>
           </tr>
           <tr>
             <td>Uplighting</td>
-            <td>“Spotlight” plus a black background reads as stage lighting from the floor</td>
+            <td>"Spotlight" plus a black background reads as stage lighting from the floor</td>
             <td>Name the shadows, not the light — under nose, under lip, under jaw; catchlights in the upper iris</td>
           </tr>
           <tr>
             <td>Conflicting pose</td>
-            <td>“Head tilted down, eyes lifted” is two competing instructions resolved inconsistently</td>
+            <td>"Head tilted down, eyes lifted" is two competing instructions resolved inconsistently</td>
             <td>Separate pitch from yaw; constrain only the axis that is actually failing</td>
           </tr>
           <tr>
@@ -340,16 +350,69 @@
             <td>Exposed midriffs smoothed to blank skin</td>
             <td>Fold the anatomy into the garment description rather than appending it as a separate clause</td>
           </tr>
+          <tr>
+            <td>Audio-driven refusals</td>
+            <td>Content classifiers false-positive on distorted synth or vocal-chop frequencies as "screams" or copyrighted audio</td>
+            <td>Pre-process audio with low-pass filter and pitch shift to defeat the acoustic fingerprint; sync the original audio in post</td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- 04 -->
+<!-- 04 · PLATFORM -->
 <section class="alt">
   <div class="container prose">
-    <h2 class="section-title">04 · Creative measured, not guessed</h2>
+    <h2 class="section-title">04 · Working around the platform</h2>
+    <p>
+      Long-form production against hosted models runs into refusals that have nothing to do with the actual
+      content. Diagnosing them — rather than rerolling around them or abandoning the shot — was a repeated
+      part of the pipeline.
+    </p>
+
+    <h3 class="sub">Cascading classifier rejections</h3>
+    <p>
+      Content classifiers rarely fire in isolation. In practice, a single acoustic or visual signal triggering
+      one classifier cascades into adjacent categories — an audio flag paired with a copyright flag, or an NSFW
+      flag paired with a violence flag, on content that is unambiguously safe. Reading the pair as evidence of a
+      cascade rather than as two independent claims makes the diagnosis tractable.
+    </p>
+
+    <h3 class="sub">Audio as a rejection surface</h3>
+    <p>
+      Musical drops with distorted synths, pitched vocal chops, or dense high-frequency content routinely
+      false-positive as "screams," "distress," or copyrighted audio. Instrumental sections that pass in isolation
+      fail once fed to the video model as a lip-sync reference.
+    </p>
+    <p>
+      The working fix is a small Audacity chain: low-pass filter at ~2 kHz, pitch shift down an octave, and heavy
+      reverb — enough to defeat the classifier's acoustic fingerprint while preserving the rhythm and dynamics
+      the dancers need to hit. The original audio is layered back over the render in post.
+    </p>
+
+    <h3 class="sub">Vocabulary that reads as neutral</h3>
+    <p>
+      Weapons and violence classifiers pattern-match on words as much as on images. "Mortar tube," "ignition,"
+      "burst," "beams cutting between towers," "sparks cascading" — all read as violence-adjacent to text
+      classifiers regardless of context. Swapping to "launch canister," "trigger switch," "bloom," "beams
+      crossing," and "trails drifting down" clears refusals with no change to the visual intent.
+    </p>
+
+    <div class="callout">
+      <p>
+        <strong>The underlying skill is treating the platform as part of the surface.</strong> Prompt design,
+        audio preprocessing, and vocabulary discipline are the same problem in three different modalities:
+        engineering around opaque classifiers that will not tell you why they said no.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 · CREATIVE MEASURED -->
+<section>
+  <div class="container prose">
+    <h2 class="section-title">05 · Creative measured, not guessed</h2>
     <p>
       Generative output is cheap, which makes taste the bottleneck — and taste is testable. Every creative
       decision in the pipeline is evaluated against live audience data rather than personal preference.
@@ -390,18 +453,11 @@
       per viewer than the flagship one. Deciding what to build next became a data question rather than a taste
       question.
     </p>
-
-    <h3 class="sub">Retention read as diagnosis</h3>
-    <p>
-      Retention curves distinguish between problems that look identical in aggregate. A cliff in the first seconds
-      is a promise mismatch between thumbnail and content; a steady slide is a pacing problem; a flat middle means
-      the content holds and the entry point is at fault. Each implies a different fix.
-    </p>
   </div>
 </section>
 
 <!-- IDENTITY -->
-<section>
+<section class="alt">
   <div class="container prose">
     <h2 class="section-title">Visual identity as a system</h2>
     <p>
@@ -423,6 +479,7 @@
       <span class="badge">Stable Diffusion</span>
       <span class="badge">Suno</span>
       <span class="badge">Adobe Premiere Pro</span>
+      <span class="badge">Audacity</span>
       <span class="badge">Python</span>
       <span class="badge">Reference conditioning</span>
       <span class="badge">Prompt templating</span>
@@ -441,7 +498,7 @@
       The project is a music group, but the work underneath it is the work these systems need in any commercial
       setting: <strong>maintaining brand and character consistency at volume</strong>,
       <strong>building prompt systems other people could run</strong>,
-      <strong>diagnosing model failure instead of rerolling past it</strong>, and
+      <strong>diagnosing model and platform failure instead of rerolling past it</strong>, and
       <strong>closing the loop between generated creative and measured performance</strong>.
     </p>
     <p>
